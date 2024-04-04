@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +49,15 @@ fun MainScreen(viewModel: MainViewModel){
     }
     val buttonIcon = remember {
         mutableIntStateOf(R.drawable.baseline_play_arrow_24)
+    }
+    if (viewModel.sensor1.value == "tripped") {
+        viewModel.addLogMessage("sensor1")
+    }
+    if (viewModel.sensor2.value == "tripped") {
+        viewModel.addLogMessage("sensor2")
+    }
+    if (viewModel.sensor3.value == "tripped") {
+        viewModel.addLogMessage("sensor3")
     }
     val mqtt = MqttManager(viewModel)
 
@@ -85,6 +95,9 @@ fun MainScreen(viewModel: MainViewModel){
                             mqtt.unsubscribe()
                             Log.d("MQTT MANAGER", "Disconnected")
                             startSensor = false
+                            viewModel.sensor1.value = "disconnected"
+                            viewModel.sensor2.value = "disconnected"
+                            viewModel.sensor3.value = "disconnected"
                             colorButton.value = Color.Green
                             buttonIcon.intValue = R.drawable.baseline_play_arrow_24
                         } catch (e: Exception){
@@ -103,27 +116,27 @@ fun MainScreen(viewModel: MainViewModel){
             .padding(it)
             .fillMaxWidth()) {
             item {
-                MQTTItemCard("Sensor 1", viewModel.sensor1.value)
-                MQTTItemCard("Sensor 2", viewModel.sensor2.value)
-                MQTTItemCard("Sensor 3", viewModel.sensor3.value)
+                MQTTItemCard("Sensor 1", viewModel.sensor1.value, viewModel.log1.value)
+                MQTTItemCard("Sensor 2", viewModel.sensor2.value, viewModel.log2.value)
+                MQTTItemCard("Sensor 3", viewModel.sensor3.value, viewModel.log3.value)
             }
         }
     }
 }
 
 @Composable
-fun MQTTItemCard(topic: String, message: String) {
+fun MQTTItemCard(topic: String, message: String, log: String) {
     val sensorIcon = remember {
         mutableIntStateOf(R.drawable.baseline_wifi_protected_setup_24)
     }
     val sensorColor = remember {
         mutableStateOf(Color.Red)
     }
-    if (message == "sensor1 true" || message == "sensor2 true" || message == "sensor3 true") {
+    if (message == "clear") {
         sensorIcon.intValue = R.drawable.baseline_check_24
         sensorColor.value = Color.Green
     }
-    if (message == "sensor1 false" || message == "sensor2 false" || message == "sensor3 false") {
+    if (message == "tripped") {
         sensorIcon.intValue = R.drawable.baseline_cancel_24
         sensorColor.value = Color.Red
     }
@@ -155,13 +168,31 @@ fun MQTTItemCard(topic: String, message: String) {
             Text(text = topic,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black)
+                color = Color.Black
+            )
             Icon(painter = painterResource(id = sensorIcon.intValue),
                 contentDescription = null,
                 modifier = Modifier.padding(8.dp),
                 tint = sensorColor.value
             )
             Text(text = message,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color.Gray
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(16.dp, 0.dp, 0.dp, 16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Last data: ",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray
+            )
+            Text(text = log,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray

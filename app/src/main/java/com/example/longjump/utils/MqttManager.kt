@@ -20,7 +20,7 @@ class MqttManager(val viewModel: MainViewModel) {
         connect()
     }
 
-    fun connect() {
+    private fun connect() {
         try {
             if (client == null) {
                 val serverUri = "tcp://test.mosquitto.org:1883"
