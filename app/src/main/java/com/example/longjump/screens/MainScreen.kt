@@ -56,15 +56,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(viewModel: MainViewModel, context: Context){
 
-    var startSensor by remember {
-        mutableStateOf(false)
-    }
-    val colorButton = remember {
-        mutableStateOf(Color.Green)
-    }
-    val buttonIcon = remember {
-        mutableIntStateOf(R.drawable.baseline_play_arrow_24)
-    }
     if (viewModel.sensor1.value == "tripped") {
         vibrator(context)
         viewModel.addLogMessage("sensor1")
@@ -79,7 +70,7 @@ fun MainScreen(viewModel: MainViewModel, context: Context){
     }
     val mqtt = MqttManager(viewModel)
 
-    val scope: CoroutineScope = rememberCoroutineScope()
+//    val scope: CoroutineScope = rememberCoroutineScope()
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()) {
@@ -117,40 +108,6 @@ fun MainScreen(viewModel: MainViewModel, context: Context){
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-//                IconButton(onClick = {
-//                    if (!startSensor){
-//                        try {
-//                            requestPermissionLauncher.launch(arrayOf(Manifest.permission.VIBRATE))
-//                            mqtt.subscribe()
-//                            Log.d("MQTT MANAGER", "Connected")
-//                            viewModel.sensor1.value = "connected"
-//                            viewModel.sensor2.value = "connected"
-//                            viewModel.sensor3.value = "connected"
-//                            startSensor = true
-//                            colorButton.value = Color.Red
-//                            buttonIcon.intValue = R.drawable.baseline_stop_24
-//                        } catch (e: Exception) {
-//                            Log.e("MQTT MANAGER", "Error: $e")
-//                        }
-//                    } else {
-//                        try {
-//                            mqtt.unsubscribe()
-//                            Log.d("MQTT MANAGER", "Disconnected")
-//                            startSensor = false
-//                            viewModel.sensor1.value = "disconnected"
-//                            viewModel.sensor2.value = "disconnected"
-//                            viewModel.sensor3.value = "disconnected"
-//                            colorButton.value = Color.Green
-//                            buttonIcon.intValue = R.drawable.baseline_play_arrow_24
-//                        } catch (e: Exception){
-//                            Log.e("MQTT MANAGER", "Error: $e")
-//                        }
-//                    }
-//                }, colors = IconButtonDefaults.iconButtonColors(
-//                    contentColor = colorButton.value
-//                )) {
-//                    Icon(painter = painterResource(id = buttonIcon.intValue), contentDescription = null)
-//                }
             }
         }
     ) {
@@ -165,88 +122,6 @@ fun MainScreen(viewModel: MainViewModel, context: Context){
         }
     }
 }
-
-//@Composable
-//fun MQTTItemCard(topic: String, message: String, log: String, context: Context) {
-//
-//    val vibrate = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
-//
-//    val sensorIcon = remember {
-//        mutableIntStateOf(R.drawable.baseline_wifi_protected_setup_24)
-//    }
-//    val sensorColor = remember {
-//        mutableStateOf(Color.Red)
-//    }
-//    if (message == "clear") {
-//        sensorIcon.intValue = R.drawable.baseline_check_24
-//        sensorColor.value = Color.Green
-//    }
-//    if (message == "tripped") {
-//        sensorIcon.intValue = R.drawable.baseline_cancel_24
-//        sensorColor.value = Color.Red
-//        vibrate.vibrate(500)
-//    }
-//    if (message == "connected") {
-//        sensorIcon.intValue = R.drawable.baseline_wifi_protected_setup_24
-//        sensorColor.value = Color.Green
-//    }
-//    if (message == "disconnected") {
-//        sensorIcon.intValue = R.drawable.baseline_wifi_protected_setup_24
-//        sensorColor.value = Color.Red
-//    }
-//
-//    Card(
-//        modifier = Modifier
-//            .padding(4.dp)
-//            .fillMaxWidth(),
-//        border = CardDefaults.outlinedCardBorder(),
-////            elevation = CardDefaults.cardElevation(8.dp),
-//        colors = CardDefaults.cardColors(
-//            containerColor = Color.White
-//        )
-//    ) {
-//        Column(
-//            Modifier
-//                .padding(16.dp)
-//                .fillMaxWidth(),
-//            verticalArrangement = Arrangement.Center,
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            Text(text = topic,
-//                fontSize = 18.sp,
-//                fontWeight = FontWeight.Bold,
-//                color = Color.Black
-//            )
-//            Icon(painter = painterResource(id = sensorIcon.intValue),
-//                contentDescription = null,
-//                modifier = Modifier.padding(8.dp),
-//                tint = sensorColor.value
-//            )
-//            Text(text = message,
-//                fontSize = 14.sp,
-//                fontWeight = FontWeight.Normal,
-//                color = Color.Gray
-//            )
-//        }
-//        Row(
-//            modifier = Modifier
-//                .padding(16.dp, 0.dp, 0.dp, 16.dp)
-//                .fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Text(text = "Last data: ",
-//                fontSize = 14.sp,
-//                fontWeight = FontWeight.Bold,
-//                color = Color.Gray
-//            )
-//            Text(text = log,
-//                fontSize = 14.sp,
-//                fontWeight = FontWeight.Normal,
-//                color = Color.Gray
-//            )
-//        }
-//    }
-//}
 
 @Composable
 fun MQTTItemCard(topic: String, message: String, log: String, context: Context) {
