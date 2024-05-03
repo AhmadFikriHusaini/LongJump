@@ -32,6 +32,7 @@ class MqttManager(val viewModel: MainViewModel) {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
                         // Successfully connected
                         Log.d("MQTTManager", "Client connected successfully")
+                        subscribe()
                     }
                     override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
                         Log.e("MQTTManager", "Error connecting to MQTT broker: $exception")
@@ -55,7 +56,7 @@ class MqttManager(val viewModel: MainViewModel) {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 Log.d("MQTTManager", "Message arrived")
                 topic?.let {
-                    viewModel.addMessage(it, message?.toString() ?: "No message yet")
+                    viewModel.addMessage(it, message?.toString() ?: "Connected")
                 }
             }
 

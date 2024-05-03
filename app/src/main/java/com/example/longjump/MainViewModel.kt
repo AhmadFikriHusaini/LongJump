@@ -7,14 +7,13 @@ import androidx.lifecycle.ViewModel
 
 class MainViewModel: ViewModel(){
 
-    val sensor1 = mutableStateOf("No Connected")
-    val sensor2 = mutableStateOf("No Connected")
-    val sensor3 = mutableStateOf("No Connected")
+    val sensor1 = mutableStateOf("Connected")
+    val sensor2 = mutableStateOf("Connected")
+    val sensor3 = mutableStateOf("Connected")
 
     val log1 = mutableStateOf("N/a")
     val log2 = mutableStateOf("N/a")
     val log3 = mutableStateOf("N/a")
-
 
     fun addMessage(topic: String, message: String){
         when(topic){
