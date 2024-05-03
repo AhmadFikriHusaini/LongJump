@@ -1,6 +1,12 @@
 package com.example.longjump.utils
 
+import android.content.Context
+import android.content.Context.VIBRATOR_SERVICE
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.longjump.MainViewModel
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
@@ -13,7 +19,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
-class MqttManager(val viewModel: MainViewModel) {
+class MqttManager(val viewModel: MainViewModel, val context: Context) {
     private var client: MqttAsyncClient? = null
 
     init {
@@ -55,7 +61,7 @@ class MqttManager(val viewModel: MainViewModel) {
 
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 Log.d("MQTTManager", "Message arrived")
-                topic?.let {
+                                topic?.let {
                     viewModel.addMessage(it, message?.toString() ?: "Connected")
                 }
             }
@@ -70,24 +76,24 @@ class MqttManager(val viewModel: MainViewModel) {
         })
     }
 
-    fun unsubscribe(){
-        client?.unsubscribe("iotapp/#")
-    }
-
-    fun disconnect() {
-        try {
-            client?.disconnect(null, object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken?) {
-                    Log.d("MQTTManager", "Client disconnected successfully")
-                    client = null // Reset client after disconnecting
-                }
-
-                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                    Log.e("MQTTManager", "Error disconnecting MQTT client: $exception")
-                }
-            })
-        } catch (e: Exception) {
-            Log.e("MQTTManager", "Error disconnecting MQTT client: $e")
-        }
-    }
+//    fun unsubscribe(){
+//        client?.unsubscribe("iotapp/#")
+//    }
+//
+//    fun disconnect() {
+//        try {
+//            client?.disconnect(null, object : IMqttActionListener {
+//                override fun onSuccess(asyncActionToken: IMqttToken?) {
+//                    Log.d("MQTTManager", "Client disconnected successfully")
+//                    client = null // Reset client after disconnecting
+//                }
+//
+//                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+//                    Log.e("MQTTManager", "Error disconnecting MQTT client: $exception")
+//                }
+//            })
+//        } catch (e: Exception) {
+//            Log.e("MQTTManager", "Error disconnecting MQTT client: $e")
+//        }
+//    }
 }

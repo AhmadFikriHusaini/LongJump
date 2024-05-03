@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,45 +54,28 @@ import com.example.longjump.utils.MqttManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(viewModel: MainViewModel, context: Context){
 
+    val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
+
     if (viewModel.sensor1.value == "tripped") {
-        vibrator(context)
         viewModel.addLogMessage("sensor1")
+
+        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
     }
     if (viewModel.sensor2.value == "tripped") {
-        vibrator(context)
         viewModel.addLogMessage("sensor2")
+
+        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
     }
     if (viewModel.sensor3.value == "tripped") {
-        vibrator(context)
         viewModel.addLogMessage("sensor3")
-    }
-    val mqtt = MqttManager(viewModel)
 
-//    val scope: CoroutineScope = rememberCoroutineScope()
-
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()) {
-        permissions ->
-        if (permissions[Manifest.permission.VIBRATE] == true){
-            Toast.makeText(context, "Vibration permission granted", Toast.LENGTH_SHORT).show()
-        } else {
-            val rationaleRequired = ActivityCompat.shouldShowRequestPermissionRationale(
-                context as MainActivity,
-                Manifest.permission.VIBRATE
-            ) ||ActivityCompat.shouldShowRequestPermissionRationale(
-                context,
-                Manifest.permission.VIBRATE
-            )
-            if (rationaleRequired){
-                Toast.makeText(context, "Vibration permission needed for the feature to run", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Vibration permission denied", Toast.LENGTH_SHORT).show()
-            }
-        }
+        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
     }
+    val mqtt = MqttManager(viewModel, context)
 
     Scaffold(
         topBar = {
@@ -204,17 +188,6 @@ fun MQTTItemCard(topic: String, message: String, log: String, context: Context) 
         }
     }
 }
-
-private fun vibrator(context: Context) {
-    val vibrate = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
-    val duration = 500L
-    if(Build.VERSION.SDK_INT >= 26){
-        vibrate.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
-    } else {
-        vibrate.vibrate(duration)
-    }
-}
-
 
 //@Preview
 //@Composable
